@@ -1,0 +1,26 @@
+phantom.onError = function(msg, trace) {
+    phantom.exit(1);
+};
+var page = require('webpage').create();
+page.viewportSize = { width: 800, height: 600 };
+page.open('{{ input.getUrl() }}', function(status) {
+    try {
+        if(status === "success") {
+            window.setTimeout(function () {
+                page.render(
+                    '{{ input.getOutputFile() }}',
+                    {
+                        format: 'png',
+                        quality: '100'
+                    });
+                phantom.exit(0);
+            }, 1000);
+        }
+        else {
+            phantom.exit(1);
+        }
+    }
+    catch(e) {
+        phantom.exit(1);
+    }
+});
