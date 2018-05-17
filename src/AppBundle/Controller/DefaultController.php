@@ -31,6 +31,10 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
+	$renderPath = realpath(__DIR__ . "/../../../app/Resources")."/".md5($request->get('math'));
+	if ( !file_exists($renderPath) || filesize($renderPath) < 110 ) {
+	touch($renderPath);
+
         $client = \JonnyW\PhantomJs\Client::getInstance();
         $client->getEngine()->setPath(
             \PhantomInstaller\Installer::getOS() == 'windows'
@@ -44,22 +48,27 @@ class DefaultController extends Controller
                     ->createProcedureLoader( __DIR__ . "/../../../app/Resources/phantomjs" );
 
         $client = Client::getInstance();
+        $client->isLazy();
+	$client->getEngine()->debug(true);
         $client->setProcedure('capture');
         $client->getProcedureLoader()->addLoader($procedureLoader);
 
         $jsRequest = $client->getMessageFactory()->createCaptureRequest(
             $this->generateUrl('formula', array(), true).'?math='.urlencode($request->get('math'))
         );
-
-        $fileName = str_replace('\\','/',tempnam(sys_get_temp_dir(), 'render'));
-        $jsRequest->setOutputFile($fileName);
+        $jsRequest->setOutputFile($renderPath);
+	$jsRequest->setDelay(2);
+	$jsRequest->setTimeout(10000);
 
         $client->send($jsRequest, $client->getMessageFactory()->createResponse());
-        $this->cropImage($fileName);
+	file_put_contents($renderPath.'.log', $client->getLog());
+        $this->cropImage($renderPath);
+	}
 
-        $response = new BinaryFileResponse($fileName);
-        $response->deleteFileAfterSend(true);
-        return $response;
+        $response = new BinaryFileResponse($renderPath);
+        $response->deleteFileAfterSend(false);
+        
+	return $response;
     }
 
     protected function cropImage( $filePath )
