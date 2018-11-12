@@ -1,1 +1,1 @@
-xvfb-run -e /var/log/devprom/xvfb-error.log -a phantomjs --debug=true --ssl-protocol=any --ignore-ssl-errors=true $@ 2>&1 > /var/log/devprom/phantomjs.log
+xvfb-run -e /var/log/devprom/xvfb-error.log -a phantomjs --debug=true --ssl-protocol=tlsv1 --web-security=false --ssl-protocol=any --ignore-ssl-errors=true $@ 2>&1 > /var/log/devprom/phantomjs.log
