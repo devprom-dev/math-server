@@ -34,12 +34,10 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ],
         "post-install-cmd": [
-            "@symfony-scripts",
-	    "PhantomInstaller\\Installer::installPhantomJS"
+            "@symfony-scripts"
         ],
         "post-update-cmd": [
-            "@symfony-scripts",
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "@symfony-scripts"
         ]
     },
     "config": {
